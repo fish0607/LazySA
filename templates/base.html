@@ -38,25 +38,20 @@
 </head>
 <body class="page-body">
 
-
-
 	<div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
-			
 		<!-- Add "fixed" class to make the sidebar fixed always to the browser viewport. -->
 		<!-- Adding class "toggle-others" will keep only one menu item open at a time. -->
 		<!-- Adding class "collapsed" collapse sidebar root elements and show only icons. -->
 		<div class="sidebar-menu toggle-others fixed">
-			
+
 			<div class="sidebar-menu-inner">	
 				
 				<header class="logo-env">
-					
 					<!-- logo -->
 					<div class="logo">
 						<a href="#" class="logo-expanded">
 							<img src="/static/images/logo@2x.png" width="80" alt="" />
 						</a>
-						
 						<a href="#" class="logo-collapsed">
 							<img src="/static/images/logo-collapsed@2x.png" width="40" alt="" />
 						</a>
@@ -89,17 +84,15 @@
 					<!-- class "auto-inherit-active-class" will automatically add "active" class for parent elements who are marked already with class "active" -->
 					<li class="active opened active">
 						<a href="{% url 'home' %}">
-							<i class="linecons-cog"></i>
-							<span class="title">Dashboard</span>
-						</a>
-						<ul>
-
+                            <i class="linecons-cog"></i>
+                            <span class="title">Dashboard</span>
+                        </a>
+                        <ul>
 							<li class="active">
-								<a href="{% url 'home' %}">
-									<span class="title">统计</span>
-								</a>
-							</li>
-
+                                <a href="{% url 'home' %}">
+                                    <span class="title">统计</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -108,14 +101,14 @@
 					<li class="active opened active">
                         <a href="#">
 							<i class="linecons-database"></i>
-							<span class="title">资产信息</span>
-						</a>
-						<ul>
+                            <span class="title">项目管理</span>
+                        </a>
+                        <ul>
 							<li>
 								<a href="{% url 'idc_list' %}">
 									<span class="title">IDC 列表 </span>
-								</a>
-							</li>
+                                </a>
+                            </li>
 							<li>
 								<a href="{% url 'host_list' %}">
 									<span class="title">服务器列表</span>
@@ -166,11 +159,23 @@
 					</li>
                 </ul>
 
-			</div>
-
-
-
-		</div>
+                 <ul id="main-menu" class="main-menu">
+					<li class="active opened active">
+                        <a href="#">
+							<i class="linecons-star"></i>
+							<span class="title">项目管理</span>
+						</a>
+						<ul>
+							<li>
+								<a href="#">
+									<span class="title">项目列表 </span>
+								</a>
+							</li>
+						</ul>
+					</li>
+                </ul>
+            </div>
+        </div>
 		
 		<div class="main-content">
 					
@@ -205,7 +210,7 @@
 					
 					<li class="dropdown user-profile">
 						<a href="#" data-toggle="dropdown">
-							<img src="/static/images/user-4.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+							<img src="/static/images/user01.jpg" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
 							<span>
 								{{ request.user }}
 								<i class="fa-angle-down"></i>
@@ -309,6 +314,8 @@
 	<script src="/static/js/devexpress-web-14.1/js/globalize.min.js"></script>
 	<script src="/static/js/devexpress-web-14.1/js/dx.chartjs.js"></script>
 	<script src="/static/js/toastr/toastr.min.js"></script>
+	<script src="/static/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+	<script src="/static/js/jvectormap/regions/jquery-jvectormap-world-mill-en.js"></script>
 
 
 	<!-- JavaScripts initializations and stuff -->
