@@ -16,7 +16,7 @@
 
 * 后台管理界面
 
-![github](/explain/admin1.png)  
+![github](/explain/admin01.png)
 ![github](/explain/admin02.png)
 
 * 后台IDC信息管理
