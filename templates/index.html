@@ -1,0 +1,42 @@
+{% extends 'base.html'%}
+{% block header-css %}
+{% endblock %}
+{% block page-body-content %}
+
+    <div class="row">
+        <div class="col-sm-3">
+			<div class="xe-widget xe-counter" data-count=".num" data-from="0" data-to="{{ IdcCount }}">
+				<div class="xe-icon">
+					<i class="linecons-cloud"></i>
+				</div>
+				<div class="xe-label">
+					<strong class="num">0.0%</strong>
+					<span>IDC Total </span>
+				</div>
+			</div>
+
+			<div class="xe-widget xe-counter " data-count=".num" data-from="0" data-to="{{ HostCount }}" >
+				<div class="xe-icon">
+					<i class="linecons-database"></i>
+				</div>
+					<div class="xe-label">
+						<strong class="num">0</strong>
+						<span>Server Total</span>
+					</div>
+				</div>
+
+				<div class="xe-widget xe-counter xe-counter-info" data-count=".num" data-from="0" data-to="0">
+					<div class="xe-icon">
+						<i class="linecons-cloud"></i>
+					</div>
+					<div class="xe-label">
+						<strong class="num">0</strong>
+						<span>Wahah</span>
+					</div>
+				</div>
+
+			</div>
+		</div>
+{% endblock %}
+{% block bottom-js %}
+{% endblock %}

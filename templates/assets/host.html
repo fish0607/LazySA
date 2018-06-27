@@ -1,0 +1,79 @@
+{% extends 'base.html'%}
+{% block header-css %}
+{% endblock %}
+{% block page-body-content %}
+
+    <!-- Responsive Table -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+                            <h3 class="panel-title">Host List</h3>
+						</div>
+						<div class="panel-body">
+							<div class="table-responsive" data-pattern="priority-columns" data-focus-btn-icon="fa-asterisk" data-sticky-table-header="true" data-add-display-all-btn="true" data-add-focus-btn="true">
+
+								<table cellspacing="0" class="table table-small-font table-bordered table-striped">
+									<thead>
+										<tr>
+											<th data-priority="1">ID</th>
+											<th data-priority="1">主机名</th>
+											<th data-priority="3">IDC</th>
+											<th data-priority="1">IP</th>
+											<th data-priority="3">配置</th>
+											<th data-priority="3">登陆信息</th>
+                                            <th data-priority="3">WEB验证码</th>
+											<th data-priority="6">操作系统</th>
+                                            <th data-priority="6">所在地区</th>
+                                            <th data-priority="6">分组</th>
+                                            <th data-priority="6">备注</th>
+										</tr>
+									</thead>
+									<tbody>
+                                        {% for info in contacts %}
+                                        <tr>
+											<th> {{ info.host_id }}</th>
+                                            <th> {{ info.hostname }}</th>
+                                            <th> {{ info.idc_name }}</th>
+                                            <th> 外网IP：{{ info.public_ip }} <br> 内网IP：{{ info.private_ip }} </th>
+                                            <th> {{ info.cpu }} {{ info.men }} <br> {{ info.disk }} </th>
+                                            <th> 账号：{{ info.account }} <br> 端口：{{ info.port }} <br> 密码：{{ info.password }}</th>
+                                            <th> {{ info.webcode }} </th>
+                                            <th> {{ info.system }}</th>
+                                            <th> {{ info.area }}</th>
+                                            <th> {{ info.group }}</th>
+                                            <th> {{ info.notes }}</th>
+										</tr>
+                                        {% endfor %}
+									</tbody>
+								</table>
+                            </div>
+                                             <div class="pagination">
+                <span class="step-links">
+                    {% if contacts.has_previous %}
+                        <a href="?page={{ contacts.previous_page_number }}">上一页</a>
+                    {% endif %}
+                    <span class="current">
+                        Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+                    </span>
+                    {% if contacts.has_next %}
+                        <a href="?page={{ contacts.next_page_number }}">下一页</a>
+                    {% endif %}
+                </span>
+            </div>
+
+
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+{% endblock %}
+{% block bottom-js %}
+{% endblock %}
