@@ -1,5 +1,5 @@
 * 项目名称：LazySA
-* 实现功能：服务器信息管理、运维管理、项目管理
+* 实现功能：服务器信息管理、运维管理
 * 环境需求：Python 3.6  Django-2.0、MySQL-5.6
 * paramiko simplejson
 
@@ -43,7 +43,6 @@
 
 * 资产信息查看
 
-![github](/explain/.png)
 ![github](/explain/host.png)
 
 * 运维管理
