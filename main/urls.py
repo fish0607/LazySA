@@ -4,8 +4,8 @@ from main import views
 
 urlpatterns = [
 	url(r'^index/$', views.index, name='index'),
-	url(r'^login/$', views.account_login, name='login'),
-	url(r'^logout/$', views.account_logout, name='logout'),
+	url(r'^login/$', views.AccountLogin, name='Login'),
+	url(r'^logout/$', views.AccountLogOut, name='Logout'),
 	url(r'^home/$', views.home, name='home'),
 	url(r'^files/$', views.TransferFiles, name='TransferFiles'),
 	url(r'^shell/$', views.ExecuteOrder, name='ExecuteOrder'),

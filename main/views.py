@@ -21,7 +21,7 @@ def index(request):
     return render(request, 'signin.html', locals())
 
 @csrf_exempt
-def account_login(request):
+def AccountLogin(request):
     if request.method == "POST":
         try:
             #username = request.POST['username']
@@ -48,7 +48,7 @@ def account_login(request):
     else:
         return render(request,'signin.html')
 
-def account_logout(request):
+def AccountLogOut(request):
     print("用户 %s 退出成功 " % request.user)
     SaveSysLog(request.user, '退出系统', '成功')
     auth.logout(request)
@@ -62,15 +62,73 @@ def home(request):
 
 @login_required()
 def TransferFiles(request):
-    hostlist = HostInfo.objects.all()
+    SrcHost = request.POST.get('SrcHost')
+    SrcFile = request.POST.get('SrcFile')
+    DstHost = request.POST.getlist('DstHost')
+    DstFile = request.POST.get('DstFile')
+
+    HostList = HostInfo.objects.all()
+
+    if SrcHost and SrcFile and DstHost and DstFile:
+        from main.SSH import sftpKey, sftpPassword
+        print("传输文件，源主机:" ,SrcHost)
+        print("传输文件，源文件:", SrcFile)
+        print("传输文件，目标主机:", DstHost)
+        print("传输文件，目标文件:", DstFile)
+        if SrcHost == '127.0.0.1':
+            print("从管理机上传输文件：%s" % SrcFile)
+            for host in DstHost:
+                print("生成传输文件服务器信息 %s" % host)
+                try:
+                    Info = HostInfo.objects.get(public_ip=host)
+                    HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
+                                    'password': Info.password, 'SrcFile':SrcFile, 'DstFile':DstFile}
+                    print(HostInfoDict)
+                except Exception as err:
+                    print(err)
+        else:
+            print("从服务器 %s 上传输文件：%s" %(SrcHost, SrcFile))
+            SrcHostInfo = HostInfo.objects.get(public_ip=SrcHost)
+            TmpFileName = '/tmp/'+ SrcFile.split('/')[-1]
+            print("文件临时存放：%s" %TmpFileName)
+            HostInfoDict = {'LoginUser': request.user, 'public_ip': SrcHostInfo.public_ip, 'account': SrcHostInfo.account, 'port': SrcHostInfo.port,
+                                  'password': SrcHostInfo.password, 'SrcFile':SrcFile, 'DstFile':TmpFileName}
+            for host in DstHost:
+                print("生成传输文件服务器信息 %s" % host)
+                try:
+                    Info = HostInfo.objects.get(public_ip=host)
+                    HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
+                                    'password': Info.password, 'SrcFile':TmpFileName, 'DstFile':DstFile}
+                    print(HostInfoDict)
+                except Exception as err:
+                    print(err)
+            print("清除临时文件 %s" % TmpFileName)
+            '''
+            import os
+            try:
+                os.remove(TmpFileName)
+            except Exception as err:
+                print("删除文件 %s 错误：%s" %(TmpFileName, err))
+            '''
+
     return render(request, "main/files.html",locals())
-    #return render(request, "404.html", locals())
 
 @login_required()
 def ExecuteOrder(request):
+    HostList = request.POST.getlist('HostList')
+    shell = request.POST.get('shell')
+
     hostlist = HostInfo.objects.all()
+
+    if HostList and shell:
+        from main.SSH import sshKey, sshPassword
+        print("执行命令，服务器列表: %s,命令: %s" %(HostList,shell))
+        for host in  HostList:
+            Info = HostInfo.objects.get(public_ip=host)
+            HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
+                            'password': Info.password, 'shell': shell}
+            print(HostInfoDict)
     return render(request, "main/order.html",locals())
-    #return render(request, "404.html", locals())
 
 @login_required()
 def Monitoring(request):
