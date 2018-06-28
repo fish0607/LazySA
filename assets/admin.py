@@ -9,6 +9,7 @@ from django.db import models
 # Register your models here.
 from assets.models import IDCInfo
 from assets.models import HostInfo
+from assets.models import ProjectInfo
 #from assets.models import GroupInfo
 
 class ContactIDC(admin.ModelAdmin):
@@ -43,6 +44,13 @@ class ContactGroup(admin.ModelAdmin):
     list_per_page = 15
 '''
 
+
+class ContactProject(admin.ModelAdmin):
+    list_display = ('ProjectID','ProjectHost','ProjectName','ProjectService','Group','Notes')
+    #list_display_links = ['login_url']
+    list_per_page = 15
+
 admin.site.register(IDCInfo,ContactIDC)
 admin.site.register(HostInfo,ContactHost)
 #admin.site.register(GroupInfo,ContactGroup)
+admin.site.register(ProjectInfo,ContactProject)

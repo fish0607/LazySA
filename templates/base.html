@@ -167,8 +167,18 @@
 						</a>
 						<ul>
 							<li>
-								<a href="#">
-									<span class="title">项目列表 </span>
+								<a href="{% url 'ProjectList' %}">
+									<span class="title">服务控制 </span>
+								</a>
+							</li>
+                            <li>
+								<a href="{% url 'ProjectUpdata' %}">
+									<span class="title">项目更新 </span>
+								</a>
+							</li>
+                            <li>
+								<a href="{% url 'ProjectLog' %}">
+									<span class="title">操作日志 </span>
 								</a>
 							</li>
 						</ul>

@@ -13,7 +13,7 @@ import json,simplejson
 from  django.core.serializers import serialize
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from assets.models import IDCInfo,HostInfo
+from assets.models import IDCInfo, HostInfo, ProjectInfo
 
 # Create your views here.
 @login_required()
@@ -41,3 +41,33 @@ def host_list (request):
     except EmptyPage:
         contacts = paginator.page(paginator.num_pages)
     return  render(request,'assets/host.html',locals())
+
+@login_required()
+def ProjectList (request):
+    list = ProjectInfo.objects.all()
+    paginator = Paginator(list, 15)
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        contacts = paginator.page(1)
+    except EmptyPage:
+        contacts = paginator.page(paginator.num_pages)
+    return  render(request,'assets/projectlist.html',locals())
+
+@login_required()
+def ProjectUpdata (request):
+    list = ProjectInfo.objects.all()
+    paginator = Paginator(list, 15)
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        contacts = paginator.page(1)
+    except EmptyPage:
+        contacts = paginator.page(paginator.num_pages)
+    return  render(request,'assets/projectupdata.html',locals())
+
+@login_required()
+def ProjectLog(request):
+    return render(request, "404.html", locals())

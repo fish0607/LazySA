@@ -80,3 +80,17 @@ class HostInfo(models.Model):
 	def __str__(self):
 		return self.public_ip
 
+class ProjectInfo(models.Model):
+	ProjectID = models.AutoField(primary_key=True,verbose_name='项目ID')
+	ProjectHost = models.ForeignKey(HostInfo,blank=True, null=True, on_delete=models.CASCADE, verbose_name='Host')
+	ProjectName = models.CharField(blank=True, null=True, max_length=100, verbose_name='名称')
+	ProjectService = models.CharField(blank=True, null=True, max_length=100, verbose_name='服务名称')
+	Group = models.CharField(blank=True, null=True, max_length=100, verbose_name='分组')
+	Notes = models.CharField(blank=True, null=True, max_length=100, verbose_name='备注')
+
+	class Meta:
+		verbose_name = '项目信息'
+		verbose_name_plural = '项目信息'
+
+	def __str__(self):
+		return self.ProjectName

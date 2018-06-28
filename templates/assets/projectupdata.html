@@ -1,0 +1,66 @@
+{% extends 'base.html'%}
+{% block header-css %}
+{% endblock %}
+{% block page-body-content %}
+
+    <!-- Responsive Table -->
+    <div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+                    <h3 class="panel-title">项目列表</h3>
+				</div>
+				<div class="panel-body">
+					<div class="table-responsive" data-pattern="priority-columns" data-focus-btn-icon="fa-asterisk" data-sticky-table-header="true" data-add-display-all-btn="true" data-add-focus-btn="true">
+
+						<table cellspacing="0" class="table table-small-font table-bordered table-striped">
+							<thead>
+								<tr>
+									<th data-priority="">ID</th>
+									<th data-priority="">主机</th>
+									<th data-priority="">项目名称</th>
+									<th data-priority="">服务名称</th>
+									<th data-priority="">分组</th>
+                                    <th data-priority="">备注</th>
+                                    <th data-priority="">操作</th>
+								</tr>
+							</thead>
+							<tbody>
+                            {% for info in contacts %}
+                                <tr>
+                                    <th> {{ info.ProjectID }}</th>
+                                    <th> {{ info.ProjectHost }}</th>
+                                    <th> {{ info.ProjectName }}</th>
+                                    <th> {{ info.ProjectService }}</th>
+                                    <th> {{ info.Group }}</th>
+                                    <th> {{ info.Notes }}</th>
+                                    <th> 备份 更新 回滚 </th>
+								</tr>
+                                {% endfor %}
+							</tbody>
+						</table>
+
+
+
+					</div>
+                 <div class="pagination">
+                <span class="step-links">
+                    {% if contacts.has_previous %}
+                        <a href="?page={{ contacts.previous_page_number }}">上一页</a>
+                    {% endif %}
+                    <span class="current">
+                        Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+                    </span>
+                    {% if contacts.has_next %}
+                        <a href="?page={{ contacts.next_page_number }}">下一页</a>
+                    {% endif %}
+                </span>
+            </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+{% block bottom-js %}
+{% endblock %}

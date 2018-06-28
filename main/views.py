@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from assets.models import IDCInfo
 from assets.models import HostInfo
+from assets.models import ProjectInfo
 
 from main.models import SysLog
 from main.models import SaLog
@@ -58,6 +59,7 @@ def AccountLogOut(request):
 def home(request):
     IdcCount = IDCInfo.objects.count()
     HostCount = HostInfo.objects.count()
+    ProjectCount = ProjectInfo.objects.count()
     return render(request,'index.html',locals())
 
 @login_required()
