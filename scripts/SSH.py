@@ -1,10 +1,25 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/python
-import os
+
+from os import path
 import paramiko
 import time
+import os
 
-from main.models import SaLog
+from main.SaveLog import SaveSaLog
+
+#临时目录
+TmpDir = path.join(path.dirname(path.abspath(path.dirname(__file__))),'temp')
+
+if os.path.exists(TmpDir):
+    print("临时目录: %s" %TmpDir)
+else:
+    print("临时目录: %s 不存在,程序自动创建" %TmpDir)
+    try:
+        os.mkdir(TmpDir)
+        print("临时目录: %s 创建成功" %TmpDir)
+    except Exception as err:
+        print("临时目录: %s ,自动创建失败: %s " %(TmpDir,err))
 
 def sshKey(HostInfoDict):
     pkey = os.path.expanduser(HostInfoDict['key'])
@@ -31,7 +46,7 @@ def sshKey(HostInfoDict):
         print(err)
         EndTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
     print('Result:',Result)
-    SaveLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime, HostInfoDict['cmd'], Result)
+    SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime, HostInfoDict['cmd'], Result)
 
 def sftpKey(HostInfoDict):
     pkey = os.path.expanduser('~/.ssh/id_rsa')
@@ -83,10 +98,3 @@ def sftpPassword(HostInfoDict):
         transport.close()
     except Exception as e:
         print(e)
-
-def SaveLog(LoginUser,ActionUser,HostIP,StartTime,EndTime,Cmd,Result):
-    InfoSQL = SaLog(LoginUser=LoginUser, ActionUser=ActionUser, HostIP=HostIP, StartTime=StartTime, EndTime=EndTime, Cmd=Cmd, Result=Result)
-    try:
-        InfoSQL.save()
-    except Exception as err:
-        print(err)

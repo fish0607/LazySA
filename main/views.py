@@ -18,6 +18,9 @@ from assets.models import ProjectInfo
 from main.models import SysLog
 from main.models import SaLog
 
+
+from main.SaveLog import SaveSysLog
+
 def index(request):
     return render(request, 'signin.html', locals())
 
@@ -161,9 +164,3 @@ def ShowSaLog(request):
         contacts = paginator.page(paginator.num_pages)
     return render(request, "main/salog.html",locals())
 
-def SaveSysLog(User,Operation,Result):
-    sql_info = SysLog(User=User,Operation=Operation,Result=Result)
-    try:
-        sql_info.save()
-    except Exception as err:
-        print(err)
