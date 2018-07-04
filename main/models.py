@@ -12,8 +12,7 @@ class SysLog(models.Model):
     User = models.CharField(blank=True,null=True, max_length=50, verbose_name='User')
     Time = models.DateTimeField(auto_now_add=True)
     Operation = models.CharField(max_length=500)
-    Result = models.GenericIPAddressField(blank=True, null=True, verbose_name='res')
-
+    Result = models.TextField(blank=True, null=True, verbose_name='res')
 
 class SaLog(models.Model):
     LogId = models.AutoField(primary_key=True,verbose_name='LogID')
@@ -23,4 +22,4 @@ class SaLog(models.Model):
     StartTime = models.CharField(blank=True,null=True, max_length=50, verbose_name='Start Time')
     EndTime = models.CharField(blank=True,null=True, max_length=50, verbose_name='End Time')
     Cmd = models.CharField(blank=True, null=True, max_length=500, verbose_name='action')
-    Result = models.GenericIPAddressField(blank=True, null=True, verbose_name='res')
+    Result = models.TextField(blank=True, null=True, verbose_name='res')

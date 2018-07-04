@@ -75,7 +75,7 @@ def TransferFiles(request):
     HostList = HostInfo.objects.all()
 
     if SrcHost and SrcFile and DstHost and DstFile:
-        from main.SSH import sftpKey, sftpPassword
+        from scripts.SFTP import sftpKey, sftpPassword
         print("传输文件，源主机:" ,SrcHost)
         print("传输文件，源文件:", SrcFile)
         print("传输文件，目标主机:", DstHost)
@@ -89,8 +89,9 @@ def TransferFiles(request):
                     HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
                                     'password': Info.password, 'SrcFile':SrcFile, 'DstFile':DstFile}
                     print(HostInfoDict)
+                    #sftpPassword(HostInfoDict)
                 except Exception as err:
-                    print(err)
+                    print("生成传输文件服务器信息失败 %s" %err)
         else:
             print("从服务器 %s 上传输文件：%s" %(SrcHost, SrcFile))
             SrcHostInfo = HostInfo.objects.get(public_ip=SrcHost)
@@ -106,7 +107,7 @@ def TransferFiles(request):
                                     'password': Info.password, 'SrcFile':TmpFileName, 'DstFile':DstFile}
                     print(HostInfoDict)
                 except Exception as err:
-                    print(err)
+                    print("生成传输文件服务器信息失败 %s" % err)
             print("清除临时文件 %s" % TmpFileName)
             '''
             import os
@@ -126,13 +127,20 @@ def ExecuteOrder(request):
     hostlist = HostInfo.objects.all()
 
     if HostList and shell:
-        from main.SSH import sshKey, sshPassword
+        from scripts.SSH import  sshKey, sshPassword
+        #import multiprocessing
+        #from multiprocessing import pool
         print("执行命令，服务器列表: %s,命令: %s" %(HostList,shell))
+        #p = multiprocessing.Pool(processes=10)
         for host in  HostList:
             Info = HostInfo.objects.get(public_ip=host)
             HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
                             'password': Info.password, 'shell': shell}
             print(HostInfoDict)
+            #p.apply_async(sshPassword, (HostInfoDict, ))
+            sshPassword(HostInfoDict)
+        #p.close()
+        #p.join()
     return render(request, "main/order.html",locals())
 
 @login_required()
