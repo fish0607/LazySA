@@ -16,7 +16,7 @@
                             <!--<label class="control-label">服务器列表</label>-->
                             <select class="form-control" name="HostList" id="s2example-1" multiple data-size="15">
                                 <option>127.0.0.1</option>
-                                {% for host in hostlist %}
+                                {% for host in HtmlHostList %}
                                     <option>{{ host.public_ip }}</option>
                                 {% endfor %}
                             </select>

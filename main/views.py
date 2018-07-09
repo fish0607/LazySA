@@ -18,7 +18,6 @@ from assets.models import ProjectInfo
 from main.models import SysLog
 from main.models import SaLog
 
-
 from main.SaveLog import SaveSysLog
 
 def index(request):
@@ -69,54 +68,71 @@ def home(request):
 def TransferFiles(request):
     SrcHost = request.POST.get('SrcHost')
     SrcFile = request.POST.get('SrcFile')
-    DstHost = request.POST.getlist('DstHost')
-    DstFile = request.POST.get('DstFile')
+    DestHost = request.POST.getlist('DestHost')
+    DestFile = request.POST.get('DestFile')
 
     HostList = HostInfo.objects.all()
 
-    if SrcHost and SrcFile and DstHost and DstFile:
-        from scripts.SFTP import sftpKey, sftpPassword
+    if SrcHost and SrcFile and DestHost and DestFile:
+        from scripts.SFTP import sftpPut, sftpGet
         print("传输文件，源主机:" ,SrcHost)
         print("传输文件，源文件:", SrcFile)
-        print("传输文件，目标主机:", DstHost)
-        print("传输文件，目标文件:", DstFile)
+        print("传输文件，目标主机:", DestHost)
+        print("传输文件，目标文件:", DestFile)
         if SrcHost == '127.0.0.1':
             print("从管理机上传输文件：%s" % SrcFile)
-            for host in DstHost:
+            for host in DestHost:
                 print("生成传输文件服务器信息 %s" % host)
                 try:
                     Info = HostInfo.objects.get(public_ip=host)
                     HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
-                                    'password': Info.password, 'SrcFile':SrcFile, 'DstFile':DstFile}
+                                    'password': Info.password, 'SrcFile':SrcFile.strip(), 'DestFile':DestFile.strip()}
                     print(HostInfoDict)
-                    #sftpPassword(HostInfoDict)
+                    try:
+                        sftpPut(HostInfoDict)
+                    except Exception as err:
+                        print("文件传输失败："% err)
                 except Exception as err:
-                    print("生成传输文件服务器信息失败 %s" %err)
+                    print("生成传输文件服务器 %s 信息失败 %s" %(host, err))
         else:
-            print("从服务器 %s 上传输文件：%s" %(SrcHost, SrcFile))
-            SrcHostInfo = HostInfo.objects.get(public_ip=SrcHost)
-            TmpFileName = '/tmp/'+ SrcFile.split('/')[-1]
-            print("文件临时存放：%s" %TmpFileName)
-            HostInfoDict = {'LoginUser': request.user, 'public_ip': SrcHostInfo.public_ip, 'account': SrcHostInfo.account, 'port': SrcHostInfo.port,
-                                  'password': SrcHostInfo.password, 'SrcFile':SrcFile, 'DstFile':TmpFileName}
-            for host in DstHost:
-                print("生成传输文件服务器信息 %s" % host)
-                try:
-                    Info = HostInfo.objects.get(public_ip=host)
-                    HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
-                                    'password': Info.password, 'SrcFile':TmpFileName, 'DstFile':DstFile}
-                    print(HostInfoDict)
-                except Exception as err:
-                    print("生成传输文件服务器信息失败 %s" % err)
-            print("清除临时文件 %s" % TmpFileName)
-            '''
+            # 临时目录
             import os
+            from os import path
+            TmpDir = path.join(path.dirname(path.abspath(path.dirname(__file__))), 'temp')
+            if os.path.exists(TmpDir):
+                print("临时目录: %s" % TmpDir)
+            else:
+                print("临时目录: %s 不存在,程序自动创建" % TmpDir)
+                try:
+                    os.mkdir(TmpDir)
+                    print("临时目录: %s 创建成功" % TmpDir)
+                except Exception as err:
+                    print("临时目录: %s ,自动创建失败: %s " % (TmpDir, err))
+            TmpFileName = os.path.join(TmpDir, SrcFile.split('/')[-1].strip())
+            print("从服务器 %s 下载文件：%s 至临时目录文件：%s" %(SrcHost, SrcFile, TmpFileName))
+            SrcHostInfo = HostInfo.objects.get(public_ip=SrcHost)
+            HostInfoDict = {'LoginUser': request.user, 'public_ip': SrcHostInfo.public_ip, 'account': SrcHostInfo.account, 'port': SrcHostInfo.port,
+                                  'password': SrcHostInfo.password, 'SrcFile':SrcFile.strip(), 'DestFile':TmpFileName.strip()}
             try:
-                os.remove(TmpFileName)
+                sftpGet(HostInfoDict)
+                print("从服务器 %s 下载文件：%s 至临时目录文件 %s 完成" %(SrcHost, SrcFile, TmpFileName))
+                print("传输文件 %s 至目标主机 %s 文件 %s" %(TmpFileName, DestHost, DestFile))
+                for host in DestHost:
+                    print("生成传输文件服务器信息 %s" % host)
+                    try:
+                        Info = HostInfo.objects.get(public_ip=host)
+                        HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
+                                        'password': Info.password, 'SrcFile': TmpFileName, 'DestFile': DestFile.strip()}
+                        sftpPut(HostInfoDict)
+                    except Exception as err:
+                        print("生成传输文件服务器信息失败 %s" % err)
+                print("清除临时文件 %s" % TmpFileName)
+                try:
+                    os.remove(TmpFileName)
+                except Exception as err:
+                    print("删除文件 %s 错误：%s" %(TmpFileName, err))
             except Exception as err:
-                print("删除文件 %s 错误：%s" %(TmpFileName, err))
-            '''
-
+                print("下载文件 %s 至临时目录 %s 出错：%s" %(SrcFile, TmpFileName, err))
     return render(request, "main/files.html",locals())
 
 @login_required()
@@ -124,21 +140,45 @@ def ExecuteOrder(request):
     HostList = request.POST.getlist('HostList')
     shell = request.POST.get('shell')
 
-    hostlist = HostInfo.objects.all()
+    HtmlHostList = HostInfo.objects.all()
 
     if HostList and shell:
-        from scripts.SSH import  sshKey, sshPassword
-        #import multiprocessing
-        #from multiprocessing import pool
+        from scripts.SSH import sshOrder
+        import paramiko
+        import multiprocessing
+        from multiprocessing import pool
         print("执行命令，服务器列表: %s,命令: %s" %(HostList,shell))
-        #p = multiprocessing.Pool(processes=10)
+        p = multiprocessing.Pool(processes=10)
         for host in  HostList:
-            Info = HostInfo.objects.get(public_ip=host)
-            HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
-                            'password': Info.password, 'shell': shell}
-            print(HostInfoDict)
-            #p.apply_async(sshPassword, (HostInfoDict, ))
-            sshPassword(HostInfoDict)
+            if host == "127.0.0.1" or host == "localhost":
+                print("本机执行 %s" % shell)
+                import  subprocess
+                import time
+                from main.SaveLog import SaveSaLog
+                StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                try:
+                    prog = subprocess.Popen(shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    Result = prog.communicate()
+                    print(Result)
+                    EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    try:
+                        print('保存日志到数据库')
+                        SaveSaLog(request.user, 'root', host, StartTime, EndTime, shell, Result)
+                    except Exception as err:
+                        print("日志保存失败 %s" % err)
+                except Exception as err:
+                    print("ERROR: %s" % err)
+                    EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    SaveSaLog(request.user, 'root', host, StartTime, EndTime, shell, err)
+            else:
+                Info = HostInfo.objects.get(public_ip=host)
+                HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
+                                'password': Info.password, 'shell': shell}
+                print(HostInfoDict)
+                print("加入进程")
+                #p.apply_async(sshPassword, (HostInfoDict, ))
+                #sshOrder(HostInfoDict)
+                sshOrder(HostInfoDict)
         #p.close()
         #p.join()
     return render(request, "main/order.html",locals())
@@ -171,4 +211,3 @@ def ShowSaLog(request):
     except EmptyPage:
         contacts = paginator.page(paginator.num_pages)
     return render(request, "main/salog.html",locals())
-

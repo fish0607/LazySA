@@ -8,59 +8,140 @@ import os
 
 from main.SaveLog import SaveSaLog
 
-#临时目录
-TmpDir = path.join(path.dirname(path.abspath(path.dirname(__file__))),'temp')
-
-if os.path.exists(TmpDir):
-    print("临时目录: %s" %TmpDir)
-else:
-    print("临时目录: %s 不存在,程序自动创建" %TmpDir)
+def sftpPut(HostInfoDict):
+    KeyFile = os.path.join('~', '.ssh', 'id_rsa')
+    print("尝试使用key连接服务器：%s" % HostInfoDict['public_ip'])
+    pkey = os.path.expanduser(KeyFile)
+    StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     try:
-        os.mkdir(TmpDir)
-        print("临时目录: %s 创建成功" %TmpDir)
-    except Exception as err:
-        print("临时目录: %s ,自动创建失败: %s " %(TmpDir,err))
-
-def sftpKey(HostInfoDict):
-    pkey = os.path.expanduser('~/.ssh/id_rsa')
-    private_key = paramiko.RSAKey.from_private_key_file(pkey)
-    transport = paramiko.Transport((HostInfoDict['public_ip'], HostInfoDict['port']))
-    transport.connect(username=HostInfoDict['account'], pkey=private_key)
-    try:
+        private_key = paramiko.RSAKey.from_private_key_file(pkey)
+        transport = paramiko.Transport((HostInfoDict['public_ip'], int(HostInfoDict['port'])))
+        transport.connect(username=HostInfoDict['account'], pkey=private_key)
         sftp = paramiko.SFTPClient.from_transport(transport)
-        # 将“calculator.py”上传到filelist文件夹中
-        sftp.put(HostInfoDict['SrcFile'], HostInfoDict['DstFile'])
-        # 将centos中的aaa.txt文件下载到桌面
-        #sftp.get('/filedir/oldtext.txt', r'C:\Users\duany_000\Desktop\oldtext.txt')
-        sftp.get(HostInfoDict['SrcFile'], HostInfoDict['DstFile'])
-    except Exception as e:
-        print (e)
-    transport.close()
-
-
-
-def sftpPassword(HostInfoDict):
-    # 连接虚拟机centos上的ip及端口
-    transport = paramiko.Transport((HostInfoDict['public_ip'], HostInfoDict['port']))
-    transport.connect(username=HostInfoDict['account'], password=HostInfoDict['password'])
-    # 将实例化的Transport作为参数传入SFTPClient中
-    try:
-        sftp = paramiko.SFTPClient.from_transport(transport)
-        # 上传
-        #StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        #Result = sftp.put(HostInfoDict['SrcFile'], HostInfoDict['DstFile'])
-        print('开始上传文件 %s' %HostInfoDict['SrcFile'])
-        Result = sftp.put(r'D:\Personal\Documents\LazySA\run.sh', HostInfoDict['DstFile'])
-        # 将centos中的aaa.txt文件下载到桌面
-        #Result = sftp.get('/filedir/aaa.txt', r'C:\Users\duany_000\Desktop\test_aaa.txt')
-        transport.close()
-        '''
-        EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         try:
-            print('保存日志到数据库')
-            SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,"传输文件: " + HostInfoDict['SrcFile'] , Result)
+            print('开始上传文件 %s' % HostInfoDict['SrcFile'])
+            if os.path.isdir(HostInfoDict['SrcFile']):
+                for f in os.listdir(HostInfoDict['SrcFile']):
+                    sftp.put(os.path.join(HostInfoDict['SrcFile'] + f), os.path.join(HostInfoDict['DestFile'] + f))
+            else:
+                sftp.put(HostInfoDict['SrcFile'], HostInfoDict['DestFile'])
+            transport.close()
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print('保存日志到数据库')
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                          "上传文件: " + HostInfoDict['SrcFile'] + ";" + "目标文件：" + HostInfoDict['DestFile'], '传输完成')
+            except Exception as err:
+                print("日志保存失败: %s" % err)
         except Exception as err:
-            print("日志保存失败 %s" % err)
-        '''
+            print("文件传输失败: %s" % err)
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print("错误日志保存至数据库")
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                      "上传文件: " + HostInfoDict['SrcFile'], '传输失败' + str(err))
+            except Exception as err:
+                print("日志保存失败: %s" % err)
     except Exception as err:
-        print("文件传输错误 %s" % err)
+        print("使用Key连接服务器 %s 失败: %s" % (HostInfoDict['public_ip'], err))
+
+        print("尝试使用密码连接服务器：%s" % HostInfoDict['public_ip'])
+        transport = paramiko.Transport((HostInfoDict['public_ip'], int(HostInfoDict['port'])))
+        StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        try:
+            transport.connect(username=HostInfoDict['account'], password=HostInfoDict['password'])
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            print('开始上传文件 %s' % HostInfoDict['SrcFile'])
+            # 上传
+            # sftp.put(HostInfoDict['SrcFile'], HostInfoDict['DestFile'])
+            if os.path.isdir(HostInfoDict['SrcFile']):
+                for f in os.listdir(HostInfoDict['SrcFile']):
+                    sftp.put(os.path.join(HostInfoDict['SrcFile'] + f), os.path.join(HostInfoDict['DestFile'] + f))
+            else:
+                sftp.put(HostInfoDict['SrcFile'], HostInfoDict['DestFile'])
+            transport.close()
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print('保存日志到数据库')
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                          "上传文件: " + HostInfoDict['SrcFile']  + ";" + "目标文件：" + HostInfoDict['DestFile'] , '传输完成')
+            except Exception as err:
+                print("日志保存失败 %s" % err)
+        except Exception as err:
+            print("使用密码接服务器 %s 失败: %s" % (HostInfoDict['public_ip'], err))
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print("错误日志保存至数据库")
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                          "上传文件: " + HostInfoDict['SrcFile'], '传输失败' + str(err))
+            except Exception as err:
+                print("日志保存失败: %s" % err)
+
+def sftpGet(HostInfoDict):
+    KeyFile = os.path.join('~', '.ssh', 'id_rsa')
+    print("尝试使用key连接服务器：%s" % HostInfoDict['public_ip'])
+    pkey = os.path.expanduser(KeyFile)
+    StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    try:
+        private_key = paramiko.RSAKey.from_private_key_file(pkey)
+        transport = paramiko.Transport((HostInfoDict['public_ip'], int(HostInfoDict['port'])))
+        transport.connect(username=HostInfoDict['account'], pkey=private_key)
+        sftp = paramiko.SFTPClient.from_transport(transport)
+        print('开始上传文件 %s' % HostInfoDict['SrcFile'])
+        try:
+            # 下载到临时目录
+            if os.path.isdir(HostInfoDict['DestFile']):
+                for f in sftp.listdir(HostInfoDict['SrcFile']):
+                    sftp.get(os.path.join(HostInfoDict['SrcFile'],f),os.path.join(HostInfoDict['DestFile'],f))
+            else:
+                sftp.get(HostInfoDict['SrcFile'],HostInfoDict['DestFile'])
+            transport.close()
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print('保存日志到数据库')
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                          "上传文件: " + HostInfoDict['SrcFile'] + "\n" + "目标文件：" + HostInfoDict['DstFile'], '传输完成')
+            except Exception as err:
+                print("日志保存失败 %s" % err)
+        except Exception as err:
+            print("文件传输失败: %s" % err)
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print("错误日志保存至数据库")
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                      "下载文件: " + HostInfoDict['SrcFile'], '传输失败' + str(err))
+            except Exception as err:
+                print("日志保存失败 %s" % err)
+    except Exception as err:
+        print("使用Key连接接服务器 %s 失败: %s" % (HostInfoDict['public_ip'], err))
+
+        print("尝试使用密码连接服务器：%s" % HostInfoDict['public_ip'])
+        transport = paramiko.Transport((HostInfoDict['public_ip'], int(HostInfoDict['port'])))
+        StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        try:
+            transport.connect(username=HostInfoDict['account'], password=HostInfoDict['password'])
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            print('开始从服务器 %s 上下载文件 %s' %(HostInfoDict['public_ip'], HostInfoDict['SrcFile']))
+            # 下载到临时目录
+            if os.path.isdir(HostInfoDict['DestFile']):
+                for f in sftp.listdir(HostInfoDict['SrcFile']):
+                    sftp.get(os.path.join(HostInfoDict['SrcFile'], f), os.path.join(HostInfoDict['DestFile'], f))
+            else:
+                sftp.get(HostInfoDict['SrcFile'], HostInfoDict['DestFile'])
+            transport.close()
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print('保存日志到数据库')
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                          "下载文件: " + HostInfoDict['SrcFile']  + "\n" + "目标文件：" + HostInfoDict['DestFile'] , '传输完成')
+            except Exception as err:
+                print("日志保存失败 %s" % err)
+        except Exception as err:
+            print("使用密码接服务器 %s 失败: %s" % (HostInfoDict['public_ip'], err))
+            EndTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            try:
+                print("错误日志保存至数据库")
+                SaveSaLog(HostInfoDict['LoginUser'], HostInfoDict['account'], HostInfoDict['public_ip'], StartTime, EndTime,
+                      "下载文件: " + HostInfoDict['SrcFile'], '传输失败' + str(err) )
+            except Exception as err:
+                print("日志保存失败 %s" % err)

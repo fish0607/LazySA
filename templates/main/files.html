@@ -44,7 +44,7 @@
 							<!--<form role="form">-->
                                 <div class="form-group">
 								    <label class="control-label">服务器列表</label>
-									<select class="form-control" name="DstHost" id="s2example-2" multiple>
+									<select class="form-control" name="DestHost" id="s2example-2" multiple>
 										<option></option>
 										{% for host in HostList %}
 									    	<option>{{ host.public_ip }}</option>
@@ -55,7 +55,7 @@
 								<div class="form-group">
 									<label class="control-label">文件目录</label>										
 									<label class="control-label" for="tagsinput-1">（请填写绝对路径）</label>
-									<input type="text" class="form-control" name="DstFile" id="tagsinput-1" data-role="tagsinput" placeholder='/data/backup/test.txt'/>
+									<input type="text" class="form-control" name="DestFile" id="tagsinput-1" data-role="tagsinput" placeholder='/data/backup/test.txt'/>
 								</div>
 							</form>
 						</div>
