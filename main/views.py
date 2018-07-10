@@ -19,6 +19,7 @@ from main.models import SysLog
 from main.models import SaLog
 
 from main.SaveLog import SaveSysLog
+from main.SaveLog import SaveSaLog
 
 def index(request):
     return render(request, 'signin.html', locals())
@@ -175,10 +176,13 @@ def ExecuteOrder(request):
                 HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
                                 'password': Info.password, 'shell': shell}
                 print(HostInfoDict)
-                print("加入进程")
-                #p.apply_async(sshPassword, (HostInfoDict, ))
-                #sshOrder(HostInfoDict)
-                sshOrder(HostInfoDict)
+                try:
+                    # p.apply_async(sshPassword, (HostInfoDict, ))
+                    # sshOrder(HostInfoDict)
+                    sshOrder(HostInfoDict)
+                    print("命令执行成功")
+                except Exception as err:
+                    print("执行命令失败：%s" % err)
         #p.close()
         #p.join()
     return render(request, "main/order.html",locals())

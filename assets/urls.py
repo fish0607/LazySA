@@ -7,5 +7,5 @@ urlpatterns = [
 	url(r'^host/$', views.host_list, name='host_list'),
 	url(r'^projectlist/$', views.ProjectList, name='ProjectList'),
 	url(r'^projectupdata/$', views.ProjectUpdata, name='ProjectUpdata'),
-	url(r'^projectlog/$', views.ProjectLog, name='ProjectLog'),
+	url(r'^projectlog/$', views.ShowProjectLog, name='ShowProjectLog'),
 ]

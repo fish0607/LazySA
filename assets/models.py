@@ -53,7 +53,6 @@ class HostInfo(models.Model):
 	system = models.CharField(blank=True, null=True, max_length=100,default='Cent OS 6.9 x64',verbose_name='操作系统')
 	area = models.CharField(blank=True, null=True, max_length=100,verbose_name='所在地区')
 	group = models.CharField(blank=True, null=True, max_length=300,verbose_name='所属组')
-	#group = models.ManyToManyField(GroupInfo, verbose_name='所属组')
 	notes = models.CharField(blank=True, null=True, max_length=500,verbose_name='备注')
 	cost = models.CharField(blank=True, null=True, max_length=500,default='-', verbose_name='费用')
 
@@ -81,10 +80,17 @@ class HostInfo(models.Model):
 		return self.public_ip
 
 class ProjectInfo(models.Model):
+	ServiceType = (
+		(0, '系统服务'),
+		(1, '项目服务'),
+	)
 	ProjectID = models.AutoField(primary_key=True,verbose_name='项目ID')
-	ProjectHost = models.ForeignKey(HostInfo,blank=True, null=True, on_delete=models.CASCADE, verbose_name='Host')
-	ProjectName = models.CharField(blank=True, null=True, max_length=100, verbose_name='名称')
-	ProjectService = models.CharField(blank=True, null=True, max_length=100, verbose_name='服务名称')
+	Type = models.IntegerField(choices=ServiceType, default='0', verbose_name='类型')
+	ProjectHost = models.ForeignKey(HostInfo, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Host')
+	ProjectName = models.CharField(blank=True, null=True, max_length=50, verbose_name='名称')
+	ServiceDir = models.CharField(blank=True, null=True, max_length=200, verbose_name='安装目录')
+	ServiceShell = models.CharField(blank=True, null=True, max_length=100, verbose_name='服务脚本')
+	ControlShell = models.CharField(blank=True, null=True, max_length=100, verbose_name='控制脚本')
 	Group = models.CharField(blank=True, null=True, max_length=100, verbose_name='分组')
 	Notes = models.CharField(blank=True, null=True, max_length=100, verbose_name='备注')
 
@@ -94,3 +100,10 @@ class ProjectInfo(models.Model):
 
 	def __str__(self):
 		return self.ProjectName
+
+class ProjectLog(models.Model):
+	LogId = models.AutoField(primary_key=True,verbose_name='LogID')
+	User = models.CharField(blank=True,null=True, max_length=50, verbose_name='User')
+	Time = models.DateTimeField(auto_now_add=True)
+	Operation = models.CharField(max_length=500)
+	Result = models.TextField(blank=True, null=True, verbose_name='res')

@@ -9,11 +9,11 @@ def SaveSysLog(User,Operation,Result):
     try:
         InfoSQL.save()
     except Exception as err:
-        print(err)
+        print("SysLog 日志保存失败：" % err)
 
 def SaveSaLog(LoginUser,ActionUser,HostIP,StartTime,EndTime,Cmd,Result):
     InfoSQL = SaLog(LoginUser=LoginUser, ActionUser=ActionUser, HostIP=HostIP, StartTime=StartTime, EndTime=EndTime, Cmd=Cmd, Result=Result)
     try:
         InfoSQL.save()
     except Exception as err:
-        print(err)
+        print("Salog 日志保存失败：" % err)

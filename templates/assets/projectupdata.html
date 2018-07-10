@@ -19,7 +19,9 @@
 									<th data-priority="">ID</th>
 									<th data-priority="">主机</th>
 									<th data-priority="">项目名称</th>
-									<th data-priority="">服务名称</th>
+                                    <th data-priority="">项目安装目录</th>
+                                    <th data-priority="">服务脚本</th>
+									<th data-priority="">控制脚本</th>
 									<th data-priority="">分组</th>
                                     <th data-priority="">备注</th>
                                     <th data-priority="">操作</th>
@@ -31,10 +33,16 @@
                                     <th> {{ info.ProjectID }}</th>
                                     <th> {{ info.ProjectHost }}</th>
                                     <th> {{ info.ProjectName }}</th>
-                                    <th> {{ info.ProjectService }}</th>
+                                    <th> {{ info.ServiceDir }}</th>
+                                    <th> {{ info.ServiceShell }}</th>
+                                    <th> {{ info.ControlShell }}</th>
                                     <th> {{ info.Group }}</th>
                                     <th> {{ info.Notes }}</th>
-                                    <th> 备份 更新 回滚 </th>
+                                    <th>
+                                        <a href="{% url 'ProjectUpdata' %}?backup={{ info.ProjectID }}"><font color="blue">备份</font></a>
+                                        <a href="{% url 'ProjectUpdata' %}?updata={{ info.ProjectID }}"><font color="blue">更新</font></a>
+                                        <a href="{% url 'ProjectUpdata' %}?rollback={{ info.ProjectID }}"><font color="blue">回滚</font></a>
+                                    </th>
 								</tr>
                                 {% endfor %}
 							</tbody>

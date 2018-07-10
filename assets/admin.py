@@ -46,8 +46,9 @@ class ContactGroup(admin.ModelAdmin):
 
 
 class ContactProject(admin.ModelAdmin):
-    list_display = ('ProjectID','ProjectHost','ProjectName','ProjectService','Group','Notes')
-    #list_display_links = ['login_url']
+    list_display = ('ProjectID', 'Type', 'ProjectHost', 'ProjectName', 'ServiceDir', 'ServiceShell', 'ControlShell', 'Group', 'Notes')
+    search_fields = ['Group', 'Type', 'ProjectHost']
+    list_filter = ['Type', 'Group']
     list_per_page = 15
 
 admin.site.register(IDCInfo,ContactIDC)
