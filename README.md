@@ -14,6 +14,10 @@
 
 * * *
 
+* 程序默认使用key连接服务器执行相关操作(key保存目录为：~/.ssh/id_rsa)
+
+* * *
+
 * 后台管理界面
 
 ![github](/explain/admin01.png)
@@ -33,6 +37,15 @@
 ![github](/explain/admin-host04.png)
 ![github](/explain/admin-host05.png)
 
+
+* 后台项目信息管理
+
+![github](/explain/admin-project01.png)
+![github](/explain/admin-project02.png)
+![github](/explain/admin-project03.png)
+
+> 注意：对应脚本名称一定要保持正常，否则相关功能会无法使用
+
 * 前台登陆
 
 ![github](/explain/login.png)
@@ -50,3 +63,4 @@
 ![github](/explain/order.png)
 ![github](/explain/files.png)
 ![github](/explain/syslog.png)
+
