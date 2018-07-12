@@ -1,12 +1,15 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/python
 
+#多进程使用需要加载 django
+#否则会出现错误：AppRegistryNotReady: Apps aren't loaded yet
+import django
+django.setup()
+
 from os import path
 import paramiko
 import time
 import os
-import multiprocessing
-from multiprocessing import pool
 
 from main.SaveLog import SaveSaLog
 
@@ -65,6 +68,9 @@ def sshPassword(HostInfoDict):
         print('执行出错: %s' % err)
 
 def sshOrder(HostInfoDict):
+    import paramiko
+    import os
+    from main.SaveLog import SaveSaLog
     KeyFile = os.path.join('~', '.ssh', 'id_rsa')
     print("尝试使用Key连接服务器 %s" % HostInfoDict['public_ip'])
     StartTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))

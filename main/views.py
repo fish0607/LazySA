@@ -11,15 +11,19 @@ import json,simplejson
 from  django.core.serializers import serialize
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
+#资产模块
 from assets.models import IDCInfo
 from assets.models import HostInfo
 from assets.models import ProjectInfo
 
+#日志模块
 from main.models import SysLog
 from main.models import SaLog
-
 from main.SaveLog import SaveSysLog
 from main.SaveLog import SaveSaLog
+#多进程处理
+import multiprocessing
+from multiprocessing import pool
 
 def index(request):
     return render(request, 'signin.html', locals())
@@ -39,14 +43,14 @@ def AccountLogin(request):
                 return HttpResponse(json.dumps(resp), content_type='application/json')
                 #return HttpResponseRedirect('/main/home/')
             else:
-                print('用户 %s 登陆失败' % request.POST['username'])
-                SaveSysLog(request.user, '登陆系统', '失败')
+                print('用户 %s 登陆失败，用户未激活' % request.POST['username'])
+                SaveSysLog(request.user, '登陆系统', '失败(用户未激活)')
                 resp = {}
                 #resp = {'accessGranted': '', 'opts': 'fail'}
                 return HttpResponse(json.dumps(resp), content_type='application/json')
                 #return render(request, 'signin.html', {'login_err': '登陆失败,请确认用户名密码后重新登陆。'})
         except Exception as err:
-            print("ERROR: %s" % err)
+            print("登陆系统失败: %s" % err)
             SaveSysLog(request.user, '登陆系统失败', err)
             return render(request, 'signin.html', {'login_err': '登陆失败,请确认用户名密码后重新登陆。'})
     else:
@@ -76,6 +80,7 @@ def TransferFiles(request):
 
     if SrcHost and SrcFile and DestHost and DestFile:
         from scripts.SFTP import sftpPut, sftpGet
+        T = multiprocessing.Pool(processes=10)
         print("传输文件，源主机:" ,SrcHost)
         print("传输文件，源文件:", SrcFile)
         print("传输文件，目标主机:", DestHost)
@@ -87,14 +92,17 @@ def TransferFiles(request):
                 try:
                     Info = HostInfo.objects.get(public_ip=host)
                     HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
-                                    'password': Info.password, 'SrcFile':SrcFile.strip(), 'DestFile':DestFile.strip()}
+                                        'password': Info.password, 'SrcFile':SrcFile.strip(), 'DestFile':DestFile.strip()}
                     print(HostInfoDict)
                     try:
-                        sftpPut(HostInfoDict)
+                        #sftpPut(HostInfoDict)
+                        T.apply_async(sftpPut, (HostInfoDict,))
                     except Exception as err:
                         print("文件传输失败："% err)
                 except Exception as err:
                     print("生成传输文件服务器 %s 信息失败 %s" %(host, err))
+            T.close()
+            T.join()
         else:
             # 临时目录
             import os
@@ -119,14 +127,20 @@ def TransferFiles(request):
                 print("从服务器 %s 下载文件：%s 至临时目录文件 %s 完成" %(SrcHost, SrcFile, TmpFileName))
                 print("传输文件 %s 至目标主机 %s 文件 %s" %(TmpFileName, DestHost, DestFile))
                 for host in DestHost:
-                    print("生成传输文件服务器信息 %s" % host)
                     try:
+                        print("生成传输文件服务器信息 %s" % host)
                         Info = HostInfo.objects.get(public_ip=host)
                         HostInfoDict = {'LoginUser': request.user, 'public_ip': Info.public_ip, 'account': Info.account, 'port': Info.port,
-                                        'password': Info.password, 'SrcFile': TmpFileName, 'DestFile': DestFile.strip()}
-                        sftpPut(HostInfoDict)
+                                            'password': Info.password, 'SrcFile': TmpFileName, 'DestFile': DestFile.strip()}
+                        try:
+                            #sftpPut(HostInfoDict)
+                            T.apply_async(sftpPut, (HostInfoDict,))
+                        except Exception as err:
+                            print("文件传输失败")
                     except Exception as err:
                         print("生成传输文件服务器信息失败 %s" % err)
+                T.close()
+                T.join()
                 print("清除临时文件 %s" % TmpFileName)
                 try:
                     os.remove(TmpFileName)
@@ -140,16 +154,11 @@ def TransferFiles(request):
 def ExecuteOrder(request):
     HostList = request.POST.getlist('HostList')
     shell = request.POST.get('shell')
-
     HtmlHostList = HostInfo.objects.all()
-
     if HostList and shell:
         from scripts.SSH import sshOrder
-        import paramiko
-        import multiprocessing
-        from multiprocessing import pool
         print("执行命令，服务器列表: %s,命令: %s" %(HostList,shell))
-        p = multiprocessing.Pool(processes=10)
+        P = multiprocessing.Pool(processes=10)
         for host in  HostList:
             if host == "127.0.0.1" or host == "localhost":
                 print("本机执行 %s" % shell)
@@ -177,14 +186,13 @@ def ExecuteOrder(request):
                                 'password': Info.password, 'shell': shell}
                 print(HostInfoDict)
                 try:
-                    # p.apply_async(sshPassword, (HostInfoDict, ))
-                    # sshOrder(HostInfoDict)
-                    sshOrder(HostInfoDict)
+                    #sshOrder(HostInfoDict)
+                    P.apply_async(sshOrder, (HostInfoDict,))
                     print("命令执行成功")
                 except Exception as err:
                     print("执行命令失败：%s" % err)
-        #p.close()
-        #p.join()
+        P.close()
+        P.join()
     return render(request, "main/order.html",locals())
 
 @login_required()

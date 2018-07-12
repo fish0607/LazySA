@@ -1,6 +1,11 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/python
 
+#多进程使用需要加载 django
+#否则会出现错误：AppRegistryNotReady: Apps aren't loaded yet
+import django
+django.setup()
+
 from os import path
 import paramiko
 import time
