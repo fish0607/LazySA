@@ -144,8 +144,9 @@ def TransferFiles(request):
                 print("清除临时文件 %s" % TmpFileName)
                 try:
                     os.remove(TmpFileName)
+                    print("临时文件 %s 已删除" % TmpFileName)
                 except Exception as err:
-                    print("删除文件 %s 错误：%s" %(TmpFileName, err))
+                    print("删除文件 %s 失败：%s" %(TmpFileName, err))
             except Exception as err:
                 print("下载文件 %s 至临时目录 %s 出错：%s" %(SrcFile, TmpFileName, err))
     return render(request, "main/files.html",locals())
@@ -159,7 +160,7 @@ def ExecuteOrder(request):
         from scripts.SSH import sshOrder
         print("执行命令，服务器列表: %s,命令: %s" %(HostList,shell))
         P = multiprocessing.Pool(processes=10)
-        for host in  HostList:
+        for host in HostList:
             if host == "127.0.0.1" or host == "localhost":
                 print("本机执行 %s" % shell)
                 import  subprocess
