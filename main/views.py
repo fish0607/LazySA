@@ -4,12 +4,15 @@ from django.shortcuts import render
 # Create your views here.
 
 from django.contrib import auth
-from django.views.decorators.csrf import csrf_exempt
+#from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse,HttpResponseRedirect,request
 import json,simplejson
 from  django.core.serializers import serialize
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib import messages
+
+#from django.template.context_processors import csrf
 
 #资产模块
 from assets.models import IDCInfo
@@ -28,8 +31,9 @@ from multiprocessing import pool
 def index(request):
     return render(request, 'signin.html', locals())
 
-@csrf_exempt
+#@csrf_exempt
 def AccountLogin(request):
+    print("测试用户")
     if request.method == "POST":
         try:
             #username = request.POST['username']
@@ -64,9 +68,12 @@ def AccountLogOut(request):
 
 @login_required()
 def home(request):
+    messages.add_message(request, messages.INFO, 'Hello world.')
     IdcCount = IDCInfo.objects.count()
     HostCount = HostInfo.objects.count()
     ProjectCount = ProjectInfo.objects.count()
+    #UrlList = show_urls(urls.urlpatterns)
+    #print(UrlList)
     return render(request,'index.html',locals())
 
 @login_required()
@@ -199,6 +206,7 @@ def ExecuteOrder(request):
 @login_required()
 def Monitoring(request):
     #return render(request, "main/monitor.html",locals())
+    print(request.path)
     return render(request, "404.html", locals())
 
 @login_required()
@@ -224,3 +232,4 @@ def ShowSaLog(request):
     except EmptyPage:
         contacts = paginator.page(paginator.num_pages)
     return render(request, "main/salog.html",locals())
+

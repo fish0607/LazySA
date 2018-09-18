@@ -19,6 +19,10 @@ class IDCInfo(models.Model):
 		verbose_name = 'IDC 信息'
 		verbose_name_plural = 'IDC 信息'
 
+	Permissions = (
+		("scan_host", u"查看主机信息"),
+	)
+
 	def __str__(self):
 		return self.idc_name
 
@@ -86,8 +90,8 @@ class ProjectInfo(models.Model):
 	)
 	ProjectID = models.AutoField(primary_key=True,verbose_name='项目ID')
 	Type = models.IntegerField(choices=ServiceType, default='0', verbose_name='类型')
-	ProjectHost = models.ForeignKey(HostInfo, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Host')
-	ProjectName = models.CharField(blank=True, null=True, max_length=50, verbose_name='名称')
+	ProjectHost = models.ForeignKey(HostInfo, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='服务器IP')
+	ProjectName = models.CharField(blank=True, null=True, max_length=50, verbose_name='服务名称')
 	ServiceDir = models.CharField(blank=True, null=True, max_length=200, verbose_name='安装目录')
 	ServiceShell = models.CharField(blank=True, null=True, max_length=100, verbose_name='服务脚本')
 	ControlShell = models.CharField(blank=True, null=True, max_length=100, verbose_name='控制脚本')

@@ -1,6 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.contrib import admin
 
 from django import forms
@@ -11,6 +10,8 @@ from assets.models import IDCInfo
 from assets.models import HostInfo
 from assets.models import ProjectInfo
 #from assets.models import GroupInfo
+
+import xlwt
 
 class ContactIDC(admin.ModelAdmin):
     list_display = ('idc_id','idc_name','login_url','account','password','linkman','notes')
@@ -33,7 +34,7 @@ class ContactHost(admin.ModelAdmin):
     list_max_show_all = 10
     #显示总数
     #show_full_result_count = False
-  
+
 '''
 class HostFrom(forms.ModelForm):
     option = forms.ModelChoiceField(label=u'下拉框',queryset=IDCInfo.objects.all()[0])

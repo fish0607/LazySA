@@ -7,24 +7,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="description" content="Xenon Boostrap Admin Panel" />
 	<meta name="author" content="" />
+	{% load staticfiles %}
+    
+	<!--听云网站监控-->
+	<script type="text/javascript" src="{% static "js/tingyun-rum.js" %}"></script>
 
-    {% load staticfiles %}
     <link rel="shortcut icon" href="{% static "images/favicon.ico" %}"/>
 
 	<title>LazySA - Dashboard</title>
 
-    <link rel="Bookmark"  type="image/x-icon"  href="/static/favicon.ico"/>
+    <link rel="Bookmark"  type="image/x-icon"  href="{% static "favicon.ico" %}"/>
 
-	<link rel="stylesheet" href="/static/css/fonts/linecons/css/linecons.css">
-	<link rel="stylesheet" href="/static/css/fonts/fontawesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="/static/css/bootstrap.css">
-	<link rel="stylesheet" href="/static/css/xenon-core.css">
-	<link rel="stylesheet" href="/static/css/xenon-forms.css">
-	<link rel="stylesheet" href="/static/css/xenon-components.css">
-	<link rel="stylesheet" href="/static/css/xenon-skins.css">
-	<link rel="stylesheet" href="/static/css/custom.css">
+	<link rel="stylesheet" href="{% static "css/fonts/linecons/css/linecons.css" %}">
+	<link rel="stylesheet" href="{% static "css/fonts/fontawesome/css/font-awesome.min.css" %}">
+	<link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
+	<link rel="stylesheet" href="{% static "css/xenon-core.css" %}">
+	<link rel="stylesheet" href="{% static "css/xenon-forms.css" %}">
+	<link rel="stylesheet" href="{% static "css/xenon-components.css" %}">
+	<link rel="stylesheet" href="{% static "css/xenon-skins.css" %}">
+	<link rel="stylesheet" href="{% static "css/custom.css" %}">
 
-	<script src="/static/js/jquery-1.11.1.min.js"></script>
+	<script src="{% static "js/jquery-1.11.1.min.js" %}"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -50,10 +53,10 @@
 					<!-- logo -->
 					<div class="logo">
 						<a href="#" class="logo-expanded">
-							<img src="/static/images/logo@2x.png" width="80" alt="" />
+							<img src="{% static "images/logo@2x.png" %}" width="80" alt="" />
 						</a>
 						<a href="#" class="logo-collapsed">
-							<img src="/static/images/logo-collapsed@2x.png" width="40" alt="" />
+							<img src="{% static "images/logo-collapsed@2x.png" %}" width="40" alt="" />
 						</a>
 					</div>
 					
@@ -83,13 +86,13 @@
 					<!-- add class "multiple-expanded" to allow multiple submenus to open -->
 					<!-- class "auto-inherit-active-class" will automatically add "active" class for parent elements who are marked already with class "active" -->
 					<li class="active opened active">
-						<a href="{% url 'home' %}">
+						<a href="{% url 'Home' %}">
                             <i class="linecons-cog"></i>
                             <span class="title">Dashboard</span>
                         </a>
                         <ul>
 							<li class="active">
-                                <a href="{% url 'home' %}">
+                                <a href="{% url 'Home' %}">
                                     <span class="title">统计</span>
                                 </a>
                             </li>
@@ -220,7 +223,7 @@
 					
 					<li class="dropdown user-profile">
 						<a href="#" data-toggle="dropdown">
-							<img src="/static/images/user01.jpg" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+							<img src="{% static "images/user01.jpg" %}" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
 							<span>
 								{{ request.user }}
 								<i class="fa-angle-down"></i>
@@ -311,25 +314,25 @@
 	{% endblock %}
 
 	<!-- Bottom Scripts -->
-	<script src="/static/js/bootstrap.min.js"></script>
-	<script src="/static/js/TweenMax.min.js"></script>
-	<script src="/static/js/resizeable.js"></script>
-	<script src="/static/js/joinable.js"></script>
-	<script src="/static/js/xenon-api.js"></script>
-	<script src="/static/js/xenon-toggles.js"></script>
+	<script src="{% static "js/bootstrap.min.js" %}"></script>
+	<script src="{% static "js/TweenMax.min.js" %}"></script>
+	<script src="{% static "js/resizeable.js" %}"></script>
+	<script src="{% static "js/joinable.js" %}"></script>
+	<script src="{% static "js/xenon-api.js" %}"></script>
+	<script src="{% static "js/xenon-toggles.js" %}"></script>
 
 
 	<!-- Imported scripts on this page -->
-	<script src="/static/js/xenon-widgets.js"></script>
-	<script src="/static/js/devexpress-web-14.1/js/globalize.min.js"></script>
-	<script src="/static/js/devexpress-web-14.1/js/dx.chartjs.js"></script>
-	<script src="/static/js/toastr/toastr.min.js"></script>
-	<script src="/static/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-	<script src="/static/js/jvectormap/regions/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="{% static "js/xenon-widgets.js" %}"></script>
+	<script src="{% static "js/devexpress-web-14.1/js/globalize.min.js" %}"></script>
+	<script src="{% static "js/devexpress-web-14.1/js/dx.chartjs.js" %}"></script>
+	<script src="{% static "js/toastr/toastr.min.js" %}"></script>
+	<script src="{% static "js/jvectormap/jquery-jvectormap-1.2.2.min.js" %}"></script>
+	<script src="{% static "js/jvectormap/regions/jquery-jvectormap-world-mill-en.js" %}"></script>
 
 
 	<!-- JavaScripts initializations and stuff -->
-	<script src="/static/js/xenon-custom.js"></script>
+	<script src="{% static "js/xenon-custom.js" %}"></script>
 
 </body>
 </html>

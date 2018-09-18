@@ -34,21 +34,23 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    #'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main',
+    'django_extensions',
     'assets',
+    'main',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -133,6 +135,7 @@ LOGIN_URL = '/main/login/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 STATICFILES_DIRS = (
+    #os.path.join(BASE_DIR,'explain'),
 	("css", os.path.join(STATIC_ROOT,'css')),
     ("js", os.path.join(STATIC_ROOT,'js')),
 	("less", os.path.join(STATIC_ROOT,'less')),
@@ -233,3 +236,9 @@ LOGGING = {
     }
 }
 '''
+
+SUIT_CONFIG = {
+    'ADMIN_NAME': 'LazySA',
+    'HEADER_TIME_FORMAT': 'H:i:s',
+    'LIST_PER_PAGE' : 20,
+}
